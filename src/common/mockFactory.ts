@@ -17,6 +17,7 @@ import { IEditorPageProps } from "../react/components/pages/editorPage/editorPag
 import {
     IAzureCustomVisionTag, IAzureCustomVisionRegion,
 } from "../providers/export/azureCustomVision/azureCustomVisionService";
+import IApplicationActions, * as applicationActions from "../redux/actions/applicationActions";
 
 export default class MockFactory {
 
@@ -101,6 +102,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
+            securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),
             sourceConnection: connection,
@@ -502,8 +504,9 @@ export default class MockFactory {
      */
     public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
         return {
-            ...this.pageProps(projectId, "settings"),
-            connections: this.createTestConnections(),
+            ...MockFactory.pageProps(projectId, "settings"),
+            connections: MockFactory.createTestConnections(),
+            appSettings: MockFactory.appSettings(),
         };
     }
 
@@ -512,7 +515,10 @@ export default class MockFactory {
      * @param projectId Current project ID
      */
     public static editorPageProps(projectId?: string): IEditorPageProps {
-        return this.pageProps(projectId, "edit");
+        return {
+            actions: (projectActions as any) as IProjectActions,
+            ...MockFactory.pageProps(projectId, "edit"),
+        };
     }
 
     /**
@@ -587,7 +593,8 @@ export default class MockFactory {
         return {
             project: null,
             recentProjects: MockFactory.createTestProjects(),
-            actions: (projectActions as any) as IProjectActions,
+            projectActions: (projectActions as any) as IProjectActions,
+            applicationActions: (applicationActions as any) as IApplicationActions,
             history: this.history(),
             location: this.location(),
             match: this.match(projectId, method),

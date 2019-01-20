@@ -55,6 +55,7 @@ export interface IAppSettings {
 export interface IProject {
     id: string;
     name: string;
+    securityToken: string;
     description?: string;
     tags: ITag[];
     sourceConnection: IConnection;

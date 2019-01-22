@@ -1,3 +1,5 @@
+import { ExportAssetState } from "../providers/export/exportProvider";
+
 /**
  * @name - Application State
  * @description - Defines the root level application state
@@ -26,6 +28,10 @@ export interface IAppError {
     title?: string;
     message: string;
     errorCode?: string;
+}
+
+export interface IProviderOptions {
+    [key: string]: any;
 }
 
 /**
@@ -102,7 +108,11 @@ export interface IConnection {
     name: string;
     description?: string;
     providerType: string;
-    providerOptions: object;
+    providerOptions: IProviderOptions | ISecureString;
+}
+
+export interface IExportProviderOptions extends IProviderOptions {
+    assetState: ExportAssetState;
 }
 
 /**
@@ -115,7 +125,7 @@ export interface IConnection {
  */
 export interface IExportFormat {
     providerType: string;
-    providerOptions: any;
+    providerOptions: IExportProviderOptions | ISecureString;
 }
 
 /**

@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import {
     AssetState, AssetType, IAppError, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
-    IConnection, IExportFormat, IProject, ITag, StorageType, IVideoSettings,
+    IConnection, IExportFormat, IProject, ITag, StorageType, IVideoSettings, ISecurityToken,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -469,8 +469,6 @@ export default class MockFactory {
             save: jest.fn((project: IProject) => Promise.resolve(project)),
             delete: jest.fn((project: IProject) => Promise.resolve()),
             isDuplicate: jest.fn((project: IProject, projectList: IProject[]) => true),
-            encryptProject: jest.fn((project) => project),
-            decryptProject: jest.fn((project) => project),
         };
     }
 
@@ -505,11 +503,28 @@ export default class MockFactory {
      * Creates fake IAppSettings
      */
     public static appSettings(): IAppSettings {
+        const securityTokens: ISecurityToken[] = [];
+        for (let i = 1; i <= 10; i++) {
+            securityTokens.push(MockFactory.createSecurityToken(i.toString()));
+        }
+
         return {
             devToolsEnabled: false,
             securityTokens: [
-                { name: "Security-Token-Project1", key: generateKey() },
+                ...securityTokens,
+                MockFactory.createSecurityToken("TestProject"),
             ],
+        };
+    }
+
+    /**
+     * Creates a security token used for testing
+     * @param nameSuffix The name suffix to apply to the security token name
+     */
+    public static createSecurityToken(nameSuffix: string): ISecurityToken {
+        return {
+            name: `Security-Token-${nameSuffix}`,
+            key: generateKey(),
         };
     }
 

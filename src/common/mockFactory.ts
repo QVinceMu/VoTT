@@ -18,6 +18,7 @@ import {
     IAzureCustomVisionTag, IAzureCustomVisionRegion,
 } from "../providers/export/azureCustomVision/azureCustomVisionService";
 import IApplicationActions, * as applicationActions from "../redux/actions/applicationActions";
+import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSystemProxy";
 
 export default class MockFactory {
 
@@ -132,6 +133,12 @@ export default class MockFactory {
         };
     }
 
+    public static createLocalFileSystemOptions(): ILocalFileSystemProxyOptions {
+        return {
+            folderPath: "C:\\projects\\vott\\project",
+        };
+    }
+
     /**
      * Creates fake response for Azure Blob Storage `listContainers` function
      */
@@ -161,14 +168,14 @@ export default class MockFactory {
      * Creates fake data for testing Azure Cloud Storage
      */
     public static createAzureData() {
-        const options = this.createAzureOptions();
+        const options = MockFactory.createAzureOptions();
         return {
             blobName: "file1.jpg",
             blobText: "This is the content",
             fileType: "image/jpg",
             containerName: options.containerName,
-            containers: this.createAzureContainers(),
-            blobs: this.createAzureBlobs(),
+            containers: MockFactory.createAzureContainers(),
+            blobs: MockFactory.createAzureBlobs(),
             options,
         };
     }
@@ -243,7 +250,7 @@ export default class MockFactory {
      * @param name Name of connection
      */
     public static createTestCloudConnection(name: string = "test"): IConnection {
-        return this.createTestConnection(name, "azureBlobStorage");
+        return MockFactory.createTestConnection(name, "azureBlobStorage");
     }
 
     /**
@@ -270,7 +277,7 @@ export default class MockFactory {
             name: `Connection ${name}`,
             description: `Description for Connection ${name}`,
             providerType,
-            providerOptions: this.getProviderOptions(providerType),
+            providerOptions: MockFactory.getProviderOptions(providerType),
         };
     }
 
@@ -291,10 +298,12 @@ export default class MockFactory {
      */
     public static getProviderOptions(providerType) {
         switch (providerType) {
+            case "localFileSystemProxy":
+                return MockFactory.createLocalFileSystemOptions();
             case "azureBlobStorage":
-                return this.createAzureOptions();
+                return MockFactory.createAzureOptions();
             case "bingImageSearch":
-                return this.createBingOptions();
+                return MockFactory.createBingOptions();
             default:
                 return {};
         }
@@ -323,7 +332,7 @@ export default class MockFactory {
             deleteFile: jest.fn(),
             writeText: jest.fn(),
             writeBinary: jest.fn(),
-            listFiles: jest.fn(() => Promise.resolve(this.createFileList())),
+            listFiles: jest.fn(() => Promise.resolve(MockFactory.createFileList())),
             listContainers: jest.fn(),
             createContainer: jest.fn(),
             deleteContainer: jest.fn(),
@@ -337,8 +346,8 @@ export default class MockFactory {
      */
     public static createStorageProviderFromConnection(connection: IConnection): IStorageProvider {
         return {
-            ...this.createStorageProvider(),
-            storageType: this.getStorageType(connection.providerType),
+            ...MockFactory.createStorageProvider(),
+            storageType: MockFactory.getStorageType(connection.providerType),
         };
     }
 
@@ -459,6 +468,8 @@ export default class MockFactory {
             save: jest.fn((project: IProject) => Promise.resolve(project)),
             delete: jest.fn((project: IProject) => Promise.resolve()),
             isDuplicate: jest.fn((project: IProject, projectList: IProject[]) => true),
+            encryptProject: jest.fn((project) => project),
+            decryptProject: jest.fn((project) => project),
         };
     }
 
@@ -596,9 +607,9 @@ export default class MockFactory {
             recentProjects: MockFactory.createTestProjects(),
             projectActions: (projectActions as any) as IProjectActions,
             applicationActions: (applicationActions as any) as IApplicationActions,
-            history: this.history(),
-            location: this.location(),
-            match: this.match(projectId, method),
+            history: MockFactory.history(),
+            location: MockFactory.location(),
+            match: MockFactory.match(projectId, method),
         };
     }
 

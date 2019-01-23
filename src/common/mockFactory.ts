@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import {
     AssetState, AssetType, IAppError, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
-    IConnection, IExportFormat, IProject, ITag, StorageType, IProjectVideoSettings,
+    IConnection, IExportFormat, IProject, ITag, StorageType, IProjectVideoSettings, AppErrorType,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -27,7 +27,11 @@ export default class MockFactory {
      * @param {string} errorType to specify whether this is a render error or generic exception thrown
      * @returns {IAppError}
      */
-    public static createAppError(title: string = "", message: string = "", errorType: string = "generic"): IAppError {
+    public static createAppError(
+        title: string = "",
+        message: string = "",
+        errorType: string = AppErrorType.Generic,
+    ): IAppError {
         return {
             title,
             message,

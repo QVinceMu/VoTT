@@ -20,7 +20,6 @@ export const reducer = (state: IProject[] = [], action: AnyAction): IProject[] =
     let newState: IProject[] = null;
 
     switch (action.type) {
-        case ActionTypes.LOAD_PROJECT_SUCCESS:
         case ActionTypes.SAVE_PROJECT_SUCCESS:
             return [
                 { ...action.payload },
@@ -39,7 +38,6 @@ export const reducer = (state: IProject[] = [], action: AnyAction): IProject[] =
                 }
                 return updatedProject;
             });
-            localStorage.setItem("projects", JSON.stringify(newState));
             return newState;
         default:
             return state;

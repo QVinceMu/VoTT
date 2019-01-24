@@ -2,10 +2,11 @@ import React from "react";
 import EditorSideBar, { IEditorSideBarProps } from "./editorSideBar";
 import { ReactWrapper, mount } from "enzyme";
 import { AutoSizer, List } from "react-virtualized";
-import { IAsset, AssetState, AssetType } from "../../../../models/applicationState";
+import MockFactory from "../../../../common/mockFactory";
 
 describe("Editor SideBar", () => {
     const onSelectAssetHanlder = jest.fn();
+    const testAssets = MockFactory.createTestAssets();
 
     function createComponent(props: IEditorSideBarProps): ReactWrapper {
         return mount(<EditorSideBar {...props} />);
@@ -13,7 +14,7 @@ describe("Editor SideBar", () => {
 
     it("Component renders correctly", () => {
         const props: IEditorSideBarProps = {
-            assets: getTestAssets(),
+            assets: testAssets,
             onAssetSelected: onSelectAssetHanlder,
         };
 
@@ -25,7 +26,7 @@ describe("Editor SideBar", () => {
 
     it("Initializes state without asset selected", () => {
         const props: IEditorSideBarProps = {
-            assets: getTestAssets(),
+            assets: testAssets,
             onAssetSelected: onSelectAssetHanlder,
         };
 
@@ -34,7 +35,6 @@ describe("Editor SideBar", () => {
     });
 
     it("Initializes state with asset selected", () => {
-        const testAssets = getTestAssets();
         const props: IEditorSideBarProps = {
             assets: testAssets,
             selectedAsset: testAssets[0],
@@ -46,7 +46,6 @@ describe("Editor SideBar", () => {
     });
 
     it("Updates states after props have changed", (done) => {
-        const testAssets = getTestAssets();
         const props: IEditorSideBarProps = {
             assets: testAssets,
             selectedAsset: null,
@@ -65,7 +64,6 @@ describe("Editor SideBar", () => {
     });
 
     it("Calls onAssetSelected handler when an asset is selected", (done) => {
-        const testAssets = getTestAssets();
         const props: IEditorSideBarProps = {
             assets: testAssets,
             selectedAsset: testAssets[0],
@@ -80,25 +78,7 @@ describe("Editor SideBar", () => {
 
         setImmediate(() => {
             expect(wrapper.state()["selectedAsset"]).toEqual(nextAsset);
-            expect(onSelectAssetHanlder).toBeCalledWith(nextAsset);
             done();
         });
     });
 });
-
-function getTestAssets(count: number = 10): IAsset[] {
-    const assets: IAsset[] = [];
-    for (let i = 1; i <= count; i++) {
-        assets.push({
-            id: `asset-${i}`,
-            name: `Asset ${i}`,
-            format: "jpg",
-            path: `http://myserver.com/asset-${i}.jpg`,
-            size: null,
-            state: AssetState.NotVisited,
-            type: AssetType.Image,
-        });
-    }
-
-    return assets;
-}
